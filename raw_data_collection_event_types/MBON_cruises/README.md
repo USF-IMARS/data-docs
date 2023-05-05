@@ -35,13 +35,7 @@ Some helper scripts and be found at [USF-IMARS/mbon_cruise_scripts](https://gith
 ```mermaid
 graph TD
 
-CRUISE((MBON Cruise)) 
-  --> ROWS{"
-  Create Collection Event Rows 
-  station_id+stations
-  & check column types
-  "}
-  --> INVENTORY[(Cruise Status+Inventory \n Spreadsheet)]
+CRUISE((MBON Cruise))
 
 %% === cruise outputs:
 CRUISE --> HPLC[[HPLC Pads]]
@@ -52,10 +46,32 @@ CRUISE --> BB3[BB3 Datafile]
 CRUISE --> RAD[[Radiance Datafile]]
 CRUISE --> CTD_DEPTH
 CRUISE --> eDNA
+CRUISE --> LOGSHEET[["
+  FKNMS_sample_logsheet_{m}_{y}.xlsx
+  logsheet.
+  (water filtration metadata,
+  Zooplankton sampling metadata,
+  eDNA sampling metadata,
+  BB3 sampling metadata)
+"]]
+
+%% === inventory pipeline
+LOGSHEET --> ROWS{"
+  Create Collection Event Rows 
+  station_id+stations
+  & check column types
+  "}
+  --> INVENTORY[(Cruise Status+Inventory \n Spreadsheet)]
 
 %% === eDNA pipeline
 eDNA[[eDNA samples]]
---> NOAA{send to NOAA}
+--> NOAA{"modify logsheets & 
+  send to NOAA
+  Luke Thompson +
+  Enrique
+"}
+--> NOAA_LOGSHEET
+LOGSHEET --> NOAA
 
 %% === BB3 Pipeline
 BB3 --> BB3_QC{"QC"}
@@ -81,7 +97,6 @@ HPLC_F --> SB_FMT
   --> SEABASS
 HPLC_F 
   --> inventory_gen["sebastiandig/sample_processing inventory sheet generator"]
-  --> inventory_pre["pre-inventory "]
   --> INVENTORY
   --> INVENTORY_MANAGE{Manual Invetory Checks}
 
