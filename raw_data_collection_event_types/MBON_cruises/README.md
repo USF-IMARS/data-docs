@@ -34,45 +34,74 @@ The data was pulled out of Enrique's and Sebastian's home directory on IMaRS ser
 graph TD
 
 CRUISE((MBON Cruise)) 
-  --> ROWS{Create Rows \n station_id+stations}
-  --> INVENTORY[(Inventory Spreadsheet)]
+  --> ROWS{"
+  Create Collection Event Rows 
+  station_id+stations
+  & check column types
+  "}
+  --> INVENTORY[(Cruise Status+Inventory \n Spreadsheet)]
 
 %% === cruise outputs:
 CRUISE --> HPLC[[HPLC Pads]]
 CRUISE --> ZOO[[Zooplankton Sample \n in Collection]]
-CRUISE --> PADS[[filter pads]]
+CRUISE --> PADS[[Absorption \n filter pads]]
 CRUISE --> CDOM[[CDOM Samples]]
-CRUISE --> BB3[[BB3 Datafile]]
-CRUISE --> REFL[[Reflectance Datafile]]
+CRUISE --> BB3[BB3 Datafile]
+CRUISE --> RAD[[Radiance Datafile]]
+
+%% === BB3 Pipeline
+BB3 --> BB3_QC{"QC"}
+--> BB3_FIXED["BB3 Datafile (fixed)"]
+--> MERGE_BB3{Merge BB3 + Depth} 
+--> BB3_N_DEPTH["BB3+Depth File"]
+CTD_DEPTH --> MERGE_BB3
+
+BB3_N_DEPTH--> BB3_2_BS{"Convert to backscatter"}
+--> BS_F
+--> SB_FMT
+%% === reflectance pipeline
+RAD -->
+RAD_CONV{"Radiance to RRS \n conversion"}
+--> RRS_F["RRS File"]
+--> SB_FMT
 
 %% === HPLC pipeline
 HPLC --> NASA{NASA HPLC \n Processing}
-NASA --> HPLC_F[[HPLC File]]
-HPLC_F --> SB_FILE
-
+NASA --> HPLC_F[HPLC File]
+HPLC_F --> SB_FMT
+  --> SEABASS
 %% === list of database endpoints
 OBIS[(OBIS)]
 SEABASS[(SEABASS)]
 
 %% === zooplankton pipeline
-ZOO -- collection ID label --> INVENTORY
-
 ZOO --> TAXIZE{Taxonomist IDs \n the Plankton}
 TAXIZE --> ZOO_LOG[[zooplankton log spreadsheet]]
 ZOO_LOG --> DWC{DwC Alignment}
 DWC --> OBIS
+ZOO --> STORE[(CMS Colection Storage)]
 
-%% filter pad pipeline
-PADS --> PAD_P{"Process Absorption pads (Jenn)"}
-PAD_P --> AP
-PAD_P --> AD
-PAD_P --> CHLOR
+%% Absorption filter pad + CDOM pipeline
+PADS --> PAD_EXTRACT{extract from filter pads}
+PAD_EXTRACT --> AP
+PAD_EXTRACT --> AD
+PAD_EXTRACT --> CHLOR
 
-AP --> SB_FILE 
-AD --> SB_FILE 
-CHLOR --> SB_FILE
-SB_FILE{create SEABASS \n files}
-SB_FILE --> SEABASS
+AP --> PAD_P{"Aborbance post- \n processing (Jenn)"}
+AD --> PAD_P
+CHLOR -->PAD_P
+
+CDOM --> CDOM_MEASURE{CDOM Measurement}
+CDOM_MEASURE --> CDOM_F[CDOM File]
+--> PAD_P
+
+PAD_P --> aP --> SB_FMT{fmt + u/l to SB}
+PAD_P --> aPH --> SB_FMT
+PAD_P --> aD --> SB_FMT
+
+PAD_P --> aCDOM --> SB_FMT
+CHLOR --> SB_FMT
+
 
 %% things that need to go to SEABASS
 %%SPECTRA[[Absorption Pad Spectra]] --> SEABASS
