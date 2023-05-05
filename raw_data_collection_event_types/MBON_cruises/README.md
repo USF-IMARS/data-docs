@@ -43,6 +43,7 @@ CRUISE --> ZOO[[Zooplankton Sample \n in Collection]]
 CRUISE --> PADS[[filter pads]]
 CRUISE --> CDOM[[CDOM Samples]]
 CRUISE --> BB3[[BB3 Datafile]]
+CRUISE --> REFL[[Reflectance Datafile]]
 
 %% === HPLC pipeline
 HPLC --> NASA{NASA HPLC \n Processing}
