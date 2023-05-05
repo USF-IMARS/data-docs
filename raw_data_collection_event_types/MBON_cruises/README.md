@@ -56,76 +56,64 @@ CRUISE --> LOGSHEET[["
 "]]
 
 %% === inventory pipeline
-LOGSHEET --> ROWS{"
-  Create Collection Event Rows 
-  station_id + stations
-  & check column types using
-  usf-imars/mbon_cruise_scripts
-  inventory sheet generator
-  "}
+LOGSHEET --> ROWS_GEN{status_inventory_gen}
   --> INVENTORY[(Cruise Status+Inventory \n Spreadsheet)]
-LOGSHEET 
-  --> INVENTORY_MANAGE{Manual Invetory Checks}
 
 %% === eDNA pipeline
 eDNA[[eDNA samples]]
---> NOAA{"modify logsheets & 
-  send to NOAA
-  Luke Thompson +
-  Enrique
-"}
+--> NOAA{logsheet_mod}
 --> NOAA_LOGSHEET
 LOGSHEET --> NOAA
 
 %% === BB3 Pipeline
 LOGSHEET --> BB3_QC
-BB3 --> BB3_QC{"QC"}
+BB3 --> BB3_QC{"bb3_qc"}
 --> BB3_FIXED["BB3 Datafile (fixed)"]
---> MERGE_BB3{Merge BB3 + Depth} 
+--> MERGE_BB3{bb3_depth_merge} 
 --> BB3_N_DEPTH["BB3+Depth File"]
 CTD_DEPTH --> MERGE_BB3
 
-BB3_N_DEPTH--> BB3_2_BS{"Convert to backscatter"}
+BB3_N_DEPTH--> BB3_2_BS{"bb3_backscatter_conv"}
 --> BS_F
 --> SB_FMT
 
 %% === reflectance pipeline
 RAD -->
-RAD_CONV{"Radiance to RRS \n conversion"}
+RAD_CONV{"rad_2_rrs"}
 --> RRS_F["RRS File"]
 --> SB_FMT
 
 %% === HPLC pipeline
 LOGSHEET --> NASA
-HPLC --> NASA{"NASA HPLC \n Processing (Crystal)"}
+HPLC --> NASA{hplc_proc}
 NASA --> HPLC_F[HPLC File]
 HPLC_F --> SB_FMT
   --> SEABASS
 
 %% === zooplankton pipeline
-ZOO --> TAXIZE{Taxonomist IDs \n the Plankton}
+ZOO --> TAXIZE{taxon_id}
 TAXIZE --> ZOO_LOG[[zooplankton log spreadsheet]]
 LOGSHEET --> DWC
-ZOO_LOG --> DWC{DwC Alignment}
+ZOO_LOG --> DWC{dwc_align}
 DWC --> OBIS
 ZOO --> STORE[("IMaRS Storage Room(s)")]
 
 %% Absorption filter pad + CDOM pipeline
-PADS --> PAD_EXTRACT{extract from filter pads}
+PADS --> PAD_EXTRACT{abs_pad_exr}
 PAD_EXTRACT --> AP
 PAD_EXTRACT --> AD
 PAD_EXTRACT --> CHLOR
 
 LOGSHEET --> PAD_P
-AP --> PAD_P{"Aborbance post- \n processing (Jenn)"}
+AP --> PAD_P{"abs_qc"}
 AD --> PAD_P
 CHLOR -->PAD_P
 
-CDOM --> CDOM_MEASURE{CDOM Measurement}
+CDOM --> CDOM_MEASURE{cdom_measure}
 CDOM_MEASURE --> CDOM_F[CDOM File]
 --> PAD_P
 
-PAD_P --> aP --> SB_FMT{fmt + u/l to SB}
+PAD_P --> aP --> SB_FMT{sb_fmt}
 PAD_P --> aPH --> SB_FMT
 PAD_P --> aD --> SB_FMT
 
@@ -158,8 +146,26 @@ classDef popupsubgraph color:#2ff,text-decoration: underline
 %% external links
 click MAP "https://github.com/marinebon/map-of-activities"
 click REGISTER "https://github.com/marinebon/dataset-registry/issues"
-```
 
+```
+### Pipeline processes:
+process              | description
+---------------------|-------------------------------------------
+status_inventory_gen | usf-imars/mbon_cruise_scripts::merge_meta_chl_hplc_cdom.Rmd QC on logsheets & create collection Event Rows (station_id + stations) in the status inventory sheet.
+bb3_qc               | Sebastian has a WiP QC python script
+bb3_depth_merge      | Merge BB3 & Depth data - TODO: how?
+bb3_backscatter_conv | convert BB3+Depth data into backscatter - TODO: how?
+rad_2_rrs            | Radiance to RRS conversion - TODO: how?
+hplc_proc            | HPLC Processing done by Crystal @ NASA
+taxon_id             | Taxonomist IDs Plankton from sample aliquot(s)
+dwc_align            | DwC Alignment
+abs_pad_extr         | extraction from filter pads
+abs_qc               | Aborbance post-processing done by Jenn
+cdom_measure         | CDOM Measurement taken
+sb_fmt               | format and upload data to SEABASS
+logsheet_mod         | modify logsheets & send to NOAA (Luke Thompson + Enrique)
+  
+## data details:
 Data collected includes :
 * CDOM
 * a_ph, a_nap, and chlorophyll 
