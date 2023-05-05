@@ -135,6 +135,11 @@ The labwork of CDOM data analysis may be transitioning to be done in Miami and m
 About 20 duplicate samples have been taken to verify that the results are the same when compared with existing methods. 
 Some of these smaples were near-shore and others were offshore.
 
+CDOM (wavelengths 200 to 800 nm) includes: abs_ag = gelbstoff (or CDOM) absorbance coefficient (averaged raw duplicate scans); ag = gelbstoff (or CDOM) absorption coefficient (null point corrected).
+
+## Absorption Pads
+Absorption Spectra (wavelengths 400 to 800 nm) includes: abs_ap = Optical density spectra of total particulates (unitless); abs_ad = Optical density spectra of detritus (unitless); ap = Absorption spectra of total particulates (units: 1/m); ad = Absorption spectra of detritus (units: 1/m).
+
 ## eDNA
 Carolina and Anni in process of submitting eDNA occurrence data to OBIS (2023-03).
 Luke Thompson and Enrique in Miami watching over the project.
