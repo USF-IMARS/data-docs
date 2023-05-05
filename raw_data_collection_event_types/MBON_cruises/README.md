@@ -29,6 +29,8 @@ Much of this data is hosted on box.com; the effort of putting things there was d
 That data is [here]( https://usf.app.box.com/folder/179388329770 ).
 The data was pulled out of Enrique's and Sebastian's home directory on IMaRS servers (yin.marine.usf.edu:/yin/homes/enrique;yin.marine.usf.edu:/yin/homes/sebastian).
 
+Some helper scripts and be found at [USF-IMARS/mbon_cruise_scripts](https://github.com/USF-IMARS/mbon_cruise_scripts).
+
 ## Data Processing Pipeline:
 ```mermaid
 graph TD
