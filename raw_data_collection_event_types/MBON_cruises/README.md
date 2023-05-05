@@ -58,10 +58,14 @@ CRUISE --> LOGSHEET[["
 %% === inventory pipeline
 LOGSHEET --> ROWS{"
   Create Collection Event Rows 
-  station_id+stations
-  & check column types
+  station_id + stations
+  & check column types using
+  usf-imars/mbon_cruise_scripts
+  inventory sheet generator
   "}
   --> INVENTORY[(Cruise Status+Inventory \n Spreadsheet)]
+LOGSHEET 
+  --> INVENTORY_MANAGE{Manual Invetory Checks}
 
 %% === eDNA pipeline
 eDNA[[eDNA samples]]
@@ -97,10 +101,6 @@ HPLC --> NASA{"NASA HPLC \n Processing (Crystal)"}
 NASA --> HPLC_F[HPLC File]
 HPLC_F --> SB_FMT
   --> SEABASS
-HPLC_F 
-  --> inventory_gen["sebastiandig/sample_processing inventory sheet generator"]
-  --> INVENTORY
-  --> INVENTORY_MANAGE{Manual Invetory Checks}
 
 %% === zooplankton pipeline
 ZOO --> TAXIZE{Taxonomist IDs \n the Plankton}
