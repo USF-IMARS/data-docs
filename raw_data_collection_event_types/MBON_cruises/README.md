@@ -51,6 +51,11 @@ CRUISE --> CDOM[[CDOM Samples]]
 CRUISE --> BB3[BB3 Datafile]
 CRUISE --> RAD[[Radiance Datafile]]
 CRUISE --> CTD_DEPTH
+CRUISE --> eDNA
+
+%% === eDNA pipeline
+eDNA[[eDNA samples]]
+--> NOAA{send to NOAA}
 
 %% === BB3 Pipeline
 BB3 --> BB3_QC{"QC"}
