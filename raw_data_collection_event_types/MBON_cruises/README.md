@@ -44,7 +44,7 @@ CRUISE --> PADS[[Absorption \n filter pads]]
 CRUISE --> CDOM[[CDOM Samples]]
 CRUISE --> BB3[BB3 Datafile]
 CRUISE --> RAD[[Radiance Datafile]]
-CRUISE --> CTD_DEPTH
+CRUISE --> CTD_DEPTH[[CTD Data from TAMU ERDDAP]]
 CRUISE --> eDNA
 CRUISE --> LOGSHEET[["
   FKNMS_sample_logsheet_{m}_{y}.xlsx
@@ -74,6 +74,7 @@ eDNA[[eDNA samples]]
 LOGSHEET --> NOAA
 
 %% === BB3 Pipeline
+LOGSHEET --> BB3_QC
 BB3 --> BB3_QC{"QC"}
 --> BB3_FIXED["BB3 Datafile (fixed)"]
 --> MERGE_BB3{Merge BB3 + Depth} 
@@ -91,6 +92,7 @@ RAD_CONV{"Radiance to RRS \n conversion"}
 --> SB_FMT
 
 %% === HPLC pipeline
+LOGSHEET --> NASA
 HPLC --> NASA{"NASA HPLC \n Processing (Crystal)"}
 NASA --> HPLC_F[HPLC File]
 HPLC_F --> SB_FMT
@@ -103,6 +105,7 @@ HPLC_F
 %% === zooplankton pipeline
 ZOO --> TAXIZE{Taxonomist IDs \n the Plankton}
 TAXIZE --> ZOO_LOG[[zooplankton log spreadsheet]]
+LOGSHEET --> DWC
 ZOO_LOG --> DWC{DwC Alignment}
 DWC --> OBIS
 ZOO --> STORE[("IMaRS Storage Room(s)")]
@@ -113,6 +116,7 @@ PAD_EXTRACT --> AP
 PAD_EXTRACT --> AD
 PAD_EXTRACT --> CHLOR
 
+LOGSHEET --> PAD_P
 AP --> PAD_P{"Aborbance post- \n processing (Jenn)"}
 AD --> PAD_P
 CHLOR -->PAD_P
