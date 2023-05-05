@@ -29,6 +29,77 @@ Much of this data is hosted on box.com; the effort of putting things there was d
 That data is [here]( https://usf.app.box.com/folder/179388329770 ).
 The data was pulled out of Enrique's and Sebastian's home directory on IMaRS servers (yin.marine.usf.edu:/yin/homes/enrique;yin.marine.usf.edu:/yin/homes/sebastian).
 
+## Data Processing Pipeline:
+```mermaid
+graph TD
+
+CRUISE((MBON Cruise)) 
+  --> ROWS{Create Rows \n station_id+stations}
+  --> INVENTORY[(Inventory Spreadsheet)]
+
+%% === cruise outputs:
+CRUISE --> HPLC[[HPLC Pads]]
+CRUISE --> ZOO[[Zooplankton Sample \n in Collection]]
+CRUISE --> PADS[[filter pads]]
+CRUISE --> CDOM[[CDOM Samples]]
+CRUISE --> BB3[[BB3 Datafile]]
+
+%% === HPLC pipeline
+HPLC --> NASA{NASA HPLC \n Processing}
+NASA --> HPLC_F[[HPLC File]]
+HPLC_F --> SB_FILE
+
+%% === list of database endpoints
+OBIS[(OBIS)]
+SEABASS[(SEABASS)]
+
+%% === zooplankton pipeline
+ZOO -- collection ID label --> INVENTORY
+
+ZOO --> TAXIZE{Taxonomist IDs \n the Plankton}
+TAXIZE --> ZOO_LOG[[zooplankton log spreadsheet]]
+ZOO_LOG --> DWC{DwC Alignment}
+DWC --> OBIS
+
+%% filter pad pipeline
+PADS --> PAD_P{"Process Absorption pads (Jenn)"}
+PAD_P --> AP
+PAD_P --> AD
+PAD_P --> CHLOR
+
+AP --> SB_FILE 
+AD --> SB_FILE 
+CHLOR --> SB_FILE
+SB_FILE{create SEABASS \n files}
+SB_FILE --> SEABASS
+
+%% things that need to go to SEABASS
+%%SPECTRA[[Absorption Pad Spectra]] --> SEABASS
+%%CDOM --> SEABASS
+%%HPLC --> SEABASS
+%%REFLECTANCE --> SEABASS
+
+%%subgraph legend
+%%    SAMPLE{Physical Object}
+%%    DB[(Database)]
+%%    UI[[Interface]]
+%%end 
+
+%% this "clickable" class works magically? 
+classDef clickable color:#25f,text-decoration: underline
+
+%% custom classes
+classDef popupsubgraph color:#2ff,text-decoration: underline
+
+%% sub-graphs from within this repo
+%%click DWC_ALIGN "https://ioos.github.io/mbon-docs/mbon-data-flow.html#darwin-core-alignment"
+%%DWC_ALIGN:::popupsubgraph
+
+%% external links
+click MAP "https://github.com/marinebon/map-of-activities"
+click REGISTER "https://github.com/marinebon/dataset-registry/issues"
+```
+
 Data collected includes :
 * CDOM
 * a_ph, a_nap, and chlorophyll 
