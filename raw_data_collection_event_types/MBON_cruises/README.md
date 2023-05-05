@@ -48,6 +48,7 @@ CRUISE --> PADS[[Absorption \n filter pads]]
 CRUISE --> CDOM[[CDOM Samples]]
 CRUISE --> BB3[BB3 Datafile]
 CRUISE --> RAD[[Radiance Datafile]]
+CRUISE --> CTD_DEPTH
 
 %% === BB3 Pipeline
 BB3 --> BB3_QC{"QC"}
@@ -59,6 +60,7 @@ CTD_DEPTH --> MERGE_BB3
 BB3_N_DEPTH--> BB3_2_BS{"Convert to backscatter"}
 --> BS_F
 --> SB_FMT
+
 %% === reflectance pipeline
 RAD -->
 RAD_CONV{"Radiance to RRS \n conversion"}
@@ -66,20 +68,22 @@ RAD_CONV{"Radiance to RRS \n conversion"}
 --> SB_FMT
 
 %% === HPLC pipeline
-HPLC --> NASA{NASA HPLC \n Processing}
+HPLC --> NASA{"NASA HPLC \n Processing (Crystal)"}
 NASA --> HPLC_F[HPLC File]
 HPLC_F --> SB_FMT
   --> SEABASS
-%% === list of database endpoints
-OBIS[(OBIS)]
-SEABASS[(SEABASS)]
+HPLC_F 
+  --> inventory_gen["sebastiandig/sample_processing inventory sheet generator"]
+  --> inventory_pre["pre-inventory "]
+  --> INVENTORY
+  --> INVENTORY_MANAGE{Manual Invetory Checks}
 
 %% === zooplankton pipeline
 ZOO --> TAXIZE{Taxonomist IDs \n the Plankton}
 TAXIZE --> ZOO_LOG[[zooplankton log spreadsheet]]
 ZOO_LOG --> DWC{DwC Alignment}
 DWC --> OBIS
-ZOO --> STORE[(CMS Colection Storage)]
+ZOO --> STORE[("IMaRS Storage Room(s)")]
 
 %% Absorption filter pad + CDOM pipeline
 PADS --> PAD_EXTRACT{extract from filter pads}
