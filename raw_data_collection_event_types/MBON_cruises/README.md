@@ -33,19 +33,22 @@ Some helper scripts and be found at [USF-IMARS/mbon_cruise_scripts](https://gith
 
 ## Data Processing Pipeline:
 ```mermaid
-graph TD
+graph LR
 
 CRUISE((MBON Cruise))
 
 %% === cruise outputs:
-CRUISE --> HPLC[[HPLC Pads]]
-CRUISE --> ZOO[[Zooplankton Sample \n in Collection]]
-CRUISE --> PADS[[Absorption \n filter pads]]
-CRUISE --> CDOM[[CDOM Samples]]
-CRUISE --> BB3[BB3 Datafile]
+%% === cruise outputs:
+%% physical samples
+CRUISE --> HPLC>HPLC Pads]
+CRUISE --> ZOO>Zooplankton Sample \n in Collection]
+CRUISE --> PADS>Absorption \n filter pads]
+CRUISE --> CDOM>CDOM Samples]
+CRUISE --> eDNA>eDNA samples]
+%% data files
+CRUISE --> BB3[[BB3 Datafile]]
 CRUISE --> RAD[[Radiance Datafile]]
 CRUISE --> CTD_DEPTH[[CTD Data from TAMU ERDDAP]]
-CRUISE --> eDNA
 CRUISE --> LOGSHEET[["
   FKNMS_sample_logsheet_{m}_{y}.xlsx
   logsheet.
@@ -91,14 +94,18 @@ HPLC_F --> SB_FMT
   --> SEABASS
 
 %% === zooplankton pipeline
-ZOO --> TAXIZE{taxon_id}
-TAXIZE --> ZOO_LOG[[zooplankton log spreadsheet]]
-LOGSHEET --> DWC
-ZOO_LOG --> DWC{dwc_align}
-DWC --> OBIS
+ZOO --> TAXIZE{taxonomist \n microscopy}
+TAXIZE --> ZOO_LOG[["zooplankton log spreadsheets \n (up to 11/cruise)"]]
+LOGSHEET --> ZOO_MERGE{Zooplankton \n files merge}
+ZOO_LOG --> ZOO_MERGE
+ZOO_MERGE --> WORMS_ALIGN{WoRMS \n alignment}
+WORMS_ALIGN --> ZOO_COMBINED[[combined \n zooplankton file]]
+ZOO_COMBINED --> DWC_CREATE{DwC Creation}
+DWC_CREATE --> DWC[[DwC Archive]] --> OBIS[(OBIS)]
+DWC_CREATE --> extra
 ZOO --> STORE[("IMaRS Storage Room(s)")]
 
-%% Absorption filter pad + CDOM pipeline
+%% === Absorption filter pad + CDOM pipeline
 PADS --> PAD_EXTRACT{abs_pad_exr}
 PAD_EXTRACT --> AP
 PAD_EXTRACT --> AD
